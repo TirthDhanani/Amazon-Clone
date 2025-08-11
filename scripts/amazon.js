@@ -41,7 +41,7 @@ products.forEach((product) => {
 
           <div class="product-spacer"></div>
 
-          <div class="added-to-cart">
+          <div class="added-to-cart added-to-cart-${product.id}">
             <img src="images/icons/checkmark.png">
             Added
           </div>
@@ -57,24 +57,25 @@ products.forEach((product) => {
 
 document.querySelector('.js-products-grid')
  .innerHTML = productsHtml;
+
 document.querySelectorAll('.js-add-to-cart')
  .forEach((button) => {
+  let addedMessageTimeoutId;
     button.addEventListener('click', () => {
-        const productId = button.dataset.productId;
+        const { productId } = button.dataset;
         const quantity = parseInt(document.querySelector(`.js-quantity-selector-${productId}`).value)
         let matchingItem;
         cart.forEach((item) => {
             if (productId === item.productId){
             matchingItem = item; 
         }})
-        
         if (matchingItem) {
             matchingItem.quantity  +=  quantity
         } else {
             cart.push(
             {
                 productId,
-                quantity : quantity
+                quantity 
             }
         );
         }
@@ -84,5 +85,15 @@ document.querySelectorAll('.js-add-to-cart')
         })
         document.querySelector('.js-cart-quantity')
         .innerHTML = cartQuantity 
+        const added = document.querySelector(`.added-to-cart-${productId}`);
+        added.classList.add('added')
+        
+        if (addedMessageTimeoutId){
+          clearTimeout(addedMessageTimeoutId)
+        }
+        const timeoutId = setTimeout(() => {
+          added.classList.remove('added')
+        }, 2000)
+        addedMessageTimeoutId = timeoutId;           
    })
  })

@@ -656,5 +656,36 @@ const products = [
       "apparel",
       "mens"
     ]
+  },
+  {
+    id: "id1",
+    image: "images/products/umbrella.jpg",
+    name: "Amazon Basics 3-Fold Travel Umbrella",
+    rating: {
+      stars: 4.5,
+      count: 2500
+    },
+    priceCents: 25000,
+    keywords: [
+      "umbrella",
+      "parasol",
+      "rainshade",
+      "sunshade"
+    ]
+  },
+  {
+    id: "id2",
+    image: "images/products/backpack.jpg",
+    name: "amazon basics 15L Black Blue Backpack",
+    rating: {
+      stars: 4,
+      count: 28
+    },
+    priceCents: 4500,
+    keywords: [
+      "bag",
+      "backpack",
+      "carrybag"
+    ]
   }
 ];
