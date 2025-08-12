@@ -91,6 +91,14 @@ cart.forEach((cartItem) => {
           </div>`
 
 })
+let cartQuantity = 0;
+cart.forEach((cartItem) => {
+      cartQuantity += cartItem.quantity
+})
+if (cartQuantity){
+    document.querySelector('.js-items-in-cart')
+    .innerHTML = `${cartQuantity} items`
+}
 
 document.querySelector('.js-order-summary')
  .innerHTML = cartSummary
