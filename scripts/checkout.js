@@ -1,7 +1,9 @@
 import { formatCurrency } from './utils/money.js';
-import {cart, removeFromCart} from '../data/cart.js' ;
+import {cart, removeFromCart, calculateCartQuantity} from '../data/cart.js' ;
 import {products} from '../data/products.js' ;
+updateCartQuantity()
 
+// Producing html for displaying items added in cart.
 let cartSummary = ''
 cart.forEach((cartItem) => {
     const productId = cartItem.productId;
@@ -30,12 +32,17 @@ cart.forEach((cartItem) => {
                   $${formatCurrency(matchingProduct.priceCents)}
                 </div>
                 <div class="product-quantity">
-                  <span>
-                    Quantity: <span class="quantity-label">${cartItem.quantity}</span>
+                  <span >
+                    Quantity: <span class="quantity-label js-quantity-label-${matchingProduct.id}">${cartItem.quantity}</span>
                   </span>
-                  <span class="update-quantity-link link-primary">
+                  <span class="update-quantity-link link-primary 
+                  js-update-link" data-product-id="${matchingProduct.id}">
                     Update
                   </span>
+                  <input class = "quantity-input 
+                  js-updated-quantity-${matchingProduct.id}" ">
+                  <span class ="save-quantity-link link-primary
+                  js-save-link" data-product-id="${matchingProduct.id}">Save</span>
                   <span class="delete-quantity-link link-primary
                   js-delete-link" data-product-id="${matchingProduct.id}"> 
                     Delete
@@ -89,19 +96,18 @@ cart.forEach((cartItem) => {
               </div>
             </div>
           </div>`
-
 })
-let cartQuantity = 0;
-cart.forEach((cartItem) => {
-      cartQuantity += cartItem.quantity
-})
-if (cartQuantity){
-    document.querySelector('.js-items-in-cart')
-    .innerHTML = `${cartQuantity} items`
-}
-
 document.querySelector('.js-order-summary')
  .innerHTML = cartSummary
+
+// custom updateCartQuantity function for displaying number of cart items.
+function updateCartQuantity(){
+    const cartQuantity = calculateCartQuantity()
+    document.querySelector('.js-items-in-cart')
+        .innerHTML = `${cartQuantity} items`
+    }
+
+// forEach and addEventListener is being used for making delete and update button on checkout page functional. 
 document.querySelectorAll('.js-delete-link')
  .forEach((link) => {
     link.addEventListener('click', () => {
@@ -110,5 +116,53 @@ document.querySelectorAll('.js-delete-link')
 
         const container = document.querySelector(`.js-cart-item-container-${productId}`)
         container.remove();
+        updateCartQuantity();
     })
  })
+
+document.querySelectorAll('.js-update-link')
+ .forEach((deleteLink) => {
+    deleteLink.addEventListener('click', () => {
+        const  {productId}  = deleteLink.dataset
+        const container = document.querySelector(`.js-cart-item-container-${productId}`)
+        container.classList.add('is-editing-quantity')
+    })
+ })
+
+ function saveQuantity(productId){
+    const quantity = document.querySelector(`.js-updated-quantity-${productId}`).value
+    if (quantity <= 0 || quantity > 100){
+        alert('Quantity entered is out of bounds')
+        return
+        
+    }else{
+        cart.forEach((cartItem) => {
+            if (cartItem.productId === productId){
+                cartItem.quantity = parseInt(quantity)
+            }
+        })
+
+        document.querySelector(`.js-quantity-label-${productId}`)
+            .innerHTML = quantity
+        updateCartQuantity()
+        const container =document.querySelector(`.js-cart-item-container-${productId}`)
+        container.classList.remove('is-editing-quantity');
+    }} 
+document.querySelectorAll(".js-save-link")
+ .forEach((link) => {
+    const {productId} = link.dataset
+    const quantityLabel = document.querySelector(`.js-updated-quantity-${productId}`)
+    link.addEventListener('click', () => {
+        saveQuantity(productId)
+        })
+    
+    quantityLabel.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter'){
+        saveQuantity(productId)
+    }
+    })
+    })
+
+    
+
+

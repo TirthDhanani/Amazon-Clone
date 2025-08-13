@@ -1,7 +1,7 @@
-import {addToCart, cart } from '../data/cart.js'
+import { addToCart, cart, calculateCartQuantity } from '../data/cart.js'
 import {products} from '../data/products.js'
 import { formatCurrency } from './utils/money.js';
-
+updateCartQuantity()
 let productsHtml ='';
 products.forEach((product) => {
     productsHtml += `
@@ -61,14 +61,10 @@ products.forEach((product) => {
 
 document.querySelector('.js-products-grid')
  .innerHTML = productsHtml;
-
 function updateCartQuantity(){
-    let cartQuantity = 0;
-        cart.forEach((cartItem) => {
-            cartQuantity += cartItem.quantity;
-        })
-        document.querySelector('.js-cart-quantity')
-        .innerHTML = cartQuantity 
+  const cartQuantity = calculateCartQuantity()
+  document.querySelector('.js-cart-quantity')
+    .innerHTML = cartQuantity
 }
 
 document.querySelectorAll('.js-add-to-cart')
@@ -78,7 +74,8 @@ document.querySelectorAll('.js-add-to-cart')
         const { productId } = button.dataset;
         const quantity = parseInt(document.querySelector(`.js-quantity-selector-${productId}`).value)
         addToCart(productId, quantity)
-        updateCartQuantity()
+        updateCartQuantity() 
+        
         const added = document.querySelector(`.added-to-cart-${productId}`);
         added.classList.add('added')
         if (addedMessageTimeoutId){
