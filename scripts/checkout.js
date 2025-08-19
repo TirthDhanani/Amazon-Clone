@@ -1,5 +1,5 @@
 import { formatCurrency } from './utils/money.js';
-import {cart, removeFromCart, calculateCartQuantity} from '../data/cart.js' ;
+import {cart, removeFromCart, calculateCartQuantity, updateDeliveryOption} from '../data/cart.js' ;
 import {products} from '../data/products.js' ;
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js';
 // Importing hello function from supersimpledev package.
@@ -95,7 +95,9 @@ function deliveryOptionsHTML(matchingProduct, cartItem) {
 
     html += `
        
-        <div class="delivery-option">
+        <div class="delivery-option js-delivery-option"
+        data-product-id="${matchingProduct.id}"
+        data-delivery-option-id="${deliveryOption.id}">
           <input type="radio" 
             ${isChecked ? 'checked' : ''}
             class="delivery-option-input"
@@ -177,6 +179,17 @@ document.querySelectorAll(".js-save-link")
         saveQuantity(productId)
     }
     })
+    })
+document.querySelectorAll('.js-delivery-option')
+    .forEach((element) => {
+      element.addEventListener('click', () => {
+        // Get the productId and deliveryOptionId from the dataset
+        const {productId, deliveryOptionId} = element.dataset
+        console.log(`Product ID: ${productId}, Delivery Option ID: ${deliveryOptionId}`);
+        // Update the delivery option for the product in the cart
+        updateDeliveryOption(productId, deliveryOptionId)
+      })
+
     })
 
     
