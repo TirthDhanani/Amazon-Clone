@@ -4,11 +4,12 @@ import {products, getProduct} from '../../data/products.js' ;
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js';
 import {deliveryOptions, getDeliveryOption} from '../../data/deliveryOptions.js';
 import { renderPaymentSummary } from './paymentSummary.js';
+import { renderCheckoutHeader } from './checkoutHeader.js';
+import { calculateDeliveryDate } from './deliveryOptions.js';
 // Function to render the order summary
 // This function will be called to display the items in the cart.
 export function renderOrderSummary(){
   // custom function for updating cart quantity.
-  updateCartQuantity()
 // Producing html for displaying items added in cart.
   let cartSummary = ''
   cart.forEach((cartItem) => {
@@ -16,15 +17,13 @@ export function renderOrderSummary(){
         const matchingProduct = getProduct(productId);
       const {deliveryOptionId} = cartItem
       const deliveryOption = getDeliveryOption(deliveryOptionId);
-
-      const today = dayjs();
-      const deliveryDate = today.add(deliveryOption.deliveryDays, 'days')
+      const deliveryDate = calculateDeliveryDate(deliveryOption);
       
       cartSummary += `
           <div class="cart-item-container 
           js-cart-item-container-${matchingProduct.id}">
               <div class="delivery-date">
-                Delivery date: ${deliveryDate.format('dddd, MMMM D')}
+                Delivery date: ${deliveryDate}
               </div>
 
               <div class="cart-item-details-grid">
@@ -68,9 +67,7 @@ export function renderOrderSummary(){
   function deliveryOptionsHTML(matchingProduct, cartItem) {
     let html = '';
     deliveryOptions.forEach((deliveryOption) => {
-      const today = dayjs();
-      const deliveryDate = today.add(deliveryOption.deliveryDays, 'days');
-      const dateString = deliveryDate.format('dddd, MMMM D');
+      const dateString = calculateDeliveryDate(deliveryOption);
       const priceString = deliveryOption.priceCents === 0 
       ? 'FREE'
       : `$${formatCurrency(deliveryOption.priceCents)} -`;
@@ -103,13 +100,6 @@ export function renderOrderSummary(){
   document.querySelector('.js-order-summary')
   .innerHTML = cartSummary
 
-  // custom updateCartQuantity function for displaying number of cart items.
-  function updateCartQuantity(){
-      const cartQuantity = calculateCartQuantity()
-      document.querySelector('.js-items-in-cart')
-          .innerHTML = `${cartQuantity} items`
-      }
-
   // forEach and addEventListener is being used for making delete and update button on checkout page functional. 
   document.querySelectorAll('.js-delete-link')
   .forEach((link) => {
@@ -121,7 +111,7 @@ export function renderOrderSummary(){
           // It will also update the cart quantity and payment summary.
           renderOrderSummary();
           // Update the cart quantity after removing an item
-          updateCartQuantity();
+          renderCheckoutHeader();
           renderPaymentSummary();
       })
   })
@@ -150,7 +140,7 @@ export function renderOrderSummary(){
 
           document.querySelector(`.js-quantity-label-${productId}`)
               .innerHTML = quantity
-          updateCartQuantity()
+          renderCheckoutHeader();
           const container =document.querySelector(`.js-cart-item-container-${productId}`)
           container.classList.remove('is-editing-quantity');
       }} 
@@ -173,7 +163,6 @@ export function renderOrderSummary(){
         element.addEventListener('click', () => {
           // Get the productId and deliveryOptionId from the dataset
           const {productId, deliveryOptionId} = element.dataset
-          console.log(`Product ID: ${productId}, Delivery Option ID: ${deliveryOptionId}`);
           // Update the delivery option for the product in the cart
           updateDeliveryOption(productId, deliveryOptionId)
           // Re-render the order summary to reflect the changes

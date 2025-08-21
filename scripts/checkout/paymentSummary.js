@@ -13,8 +13,7 @@ export function renderPaymentSummary() {
         const deliveryOption =  getDeliveryOption(cartItem.deliveryOptionId);
         deliveryPriceCents += deliveryOption.priceCents
     })
-    console.log('Total price in cents:', productPriceCents);
-    console.log('Total delivery price in cents:', deliveryPriceCents);
+
     const totalBeforeTaxCents = productPriceCents + deliveryPriceCents;
     const taxRate = 0.1;
     const taxCents = Math.round(totalBeforeTaxCents * taxRate);
