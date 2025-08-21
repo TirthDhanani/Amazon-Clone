@@ -2,10 +2,8 @@ import { formatCurrency } from '../utils/money.js';
 import {cart, removeFromCart, calculateCartQuantity, updateDeliveryOption} from '../../data/cart.js' ;
 import {products, getProduct} from '../../data/products.js' ;
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js';
-// Importing hello function from supersimpledev package.
-import { hello } from 'https://unpkg.com/supersimpledev@1.0.1/hello.esm.js';
 import {deliveryOptions, getDeliveryOption} from '../../data/deliveryOptions.js';
-
+import { renderPaymentSummary } from './paymentSummary.js';
 // Function to render the order summary
 // This function will be called to display the items in the cart.
 export function renderOrderSummary(){
@@ -18,7 +16,7 @@ export function renderOrderSummary(){
         const matchingProduct = getProduct(productId);
       const {deliveryOptionId} = cartItem
       const deliveryOption = getDeliveryOption(deliveryOptionId);
-      hello();
+
       const today = dayjs();
       const deliveryDate = today.add(deliveryOption.deliveryDays, 'days')
       
@@ -118,10 +116,13 @@ export function renderOrderSummary(){
       link.addEventListener('click', () => {
           const  {productId}  = link.dataset
           removeFromCart(productId)
-
-          const container = document.querySelector(`.js-cart-item-container-${productId}`)
-          container.remove();
+          // Re-render the order summary to reflect the changes
+          // This will remove the item from the cart display.
+          // It will also update the cart quantity and payment summary.
+          renderOrderSummary();
+          // Update the cart quantity after removing an item
           updateCartQuantity();
+          renderPaymentSummary();
       })
   })
 
@@ -177,6 +178,7 @@ export function renderOrderSummary(){
           updateDeliveryOption(productId, deliveryOptionId)
           // Re-render the order summary to reflect the changes
           renderOrderSummary();
+          renderPaymentSummary();
         })
 
       })}
