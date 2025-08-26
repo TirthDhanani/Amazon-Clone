@@ -62,3 +62,17 @@ export function updateDeliveryOption(productId,deliveryOptionId) {
     matchingItem.deliveryOptionId = deliveryOptionId;
     saveToStorage();
 }
+
+export function saveQuantity(productId){
+    const quantity = document.querySelector(`.js-updated-quantity-${productId}`).value
+    if (quantity <= 0 || quantity > 100){
+        alert('Quantity entered is out of bounds')
+        return
+        
+    }else{
+        cart.forEach((cartItem) => {
+            if (cartItem.productId === productId){
+                cartItem.quantity = parseInt(quantity)
+            }
+        })
+    }} 

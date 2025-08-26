@@ -1,5 +1,5 @@
 import { formatCurrency } from '../utils/money.js';
-import {cart, removeFromCart, calculateCartQuantity, updateDeliveryOption} from '../../data/cart.js' ;
+import {cart, removeFromCart, calculateCartQuantity, updateDeliveryOption, saveQuantity} from '../../data/cart.js' ;
 import {products, getProduct} from '../../data/products.js' ;
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js';
 import {deliveryOptions, getDeliveryOption} from '../../data/deliveryOptions.js';
@@ -117,44 +117,31 @@ export function renderOrderSummary(){
   })
 
   document.querySelectorAll('.js-update-link')
-  .forEach((deleteLink) => {
-      deleteLink.addEventListener('click', () => {
-          const  {productId}  = deleteLink.dataset
+  .forEach((updateLink) => {
+      updateLink.addEventListener('click', () => {
+          const  {productId}  = updateLink.dataset
           const container = document.querySelector(`.js-cart-item-container-${productId}`)
           container.classList.add('is-editing-quantity')
       })
   })
 
-  function saveQuantity(productId){
-      const quantity = document.querySelector(`.js-updated-quantity-${productId}`).value
-      if (quantity <= 0 || quantity > 100){
-          alert('Quantity entered is out of bounds')
-          return
-          
-      }else{
-          cart.forEach((cartItem) => {
-              if (cartItem.productId === productId){
-                  cartItem.quantity = parseInt(quantity)
-              }
-          })
-
-          document.querySelector(`.js-quantity-label-${productId}`)
-              .innerHTML = quantity
-          renderCheckoutHeader();
-          const container =document.querySelector(`.js-cart-item-container-${productId}`)
-          container.classList.remove('is-editing-quantity');
-      }} 
   document.querySelectorAll(".js-save-link")
   .forEach((link) => {
       const {productId} = link.dataset
       const quantityLabel = document.querySelector(`.js-updated-quantity-${productId}`)
       link.addEventListener('click', () => {
           saveQuantity(productId)
+          renderOrderSummary()
+          renderCheckoutHeader();
+          renderPaymentSummary();
           })
       
       quantityLabel.addEventListener('keydown', (event) => {
       if (event.key === 'Enter'){
           saveQuantity(productId)
+          renderOrderSummary()
+          renderCheckoutHeader();
+          renderPaymentSummary();
       }
       })
       })
