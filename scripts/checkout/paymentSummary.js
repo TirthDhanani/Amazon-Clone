@@ -19,7 +19,7 @@ export function renderPaymentSummary() {
     const taxCents = Math.round(totalBeforeTaxCents * taxRate);
     const totalPriceCents = totalBeforeTaxCents + taxCents;
 
-    const payemntSummaryHTML = `
+    const paymentSummaryHTML = `
         <div class="payment-summary-title">
             Order Summary
         </div>
@@ -55,7 +55,7 @@ export function renderPaymentSummary() {
 
   
     const paymentSummaryContainer = document.querySelector('.js-payment-summary');
-    paymentSummaryContainer.innerHTML = payemntSummaryHTML;
+    paymentSummaryContainer.innerHTML = paymentSummaryHTML;
     const itemsInCart = document.querySelector('.js-totalitems-in-cart');
     const cartQuantity = calculateCartQuantity();
     itemsInCart.innerHTML = `Items (${cartQuantity}):`;
