@@ -10,4 +10,10 @@ describe('test suite : formatCurrency', () => {
     it('rounds to two decimal places', () => {
         expect(formatCurrency(2000.5)).toEqual('20.01');
     });
+    it('rounds down to the nearest cent', () => {
+        expect(formatCurrency(2000.4)).toEqual('20.00');
+    })
+    it('works with negative values', () => {
+        expect(formatCurrency(-2095)).toEqual('-20.95');
+    })
 })
